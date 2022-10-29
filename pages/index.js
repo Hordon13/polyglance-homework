@@ -1,40 +1,27 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.scss";
+import { createNewSpending, getSpendings } from "../utils/api";
 
-const Home = ({ data }) => {
-  const [spendings, setSpending] = useState([...data]);
+const Home = ({ fetchedSpendings }) => {
+  const [spendings, setSpending] = useState([...fetchedSpendings]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currencies = {
-    HUF: "HUF",
-    EUR: "EUR",
-  };
-
-  const initialFormFields = {
-    discription: "",
-    amount: null,
-    currency: currencies.HUF,
-  };
-
-  const [formFields, setFormFields] = useState(initialFormFields);
-
-  const sortByOptions = {
-    AMOUNT: "amount",
-    DATE: "date",
-  };
-
-  const defaultSortSettings = {
-    isAscending: false,
-    sortBy: sortByOptions,
-  };
-
-  const [sortSettings, setSortSettings] = useState(defaultSortSettings);
-
-  const addNewSpending = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log("submitting...", formFields);
+
+    const newSpending = {
+      description: e.target.description.value,
+      amount: Number(e.target.amount.value),
+      currency: e.target.currency.value,
+      spent_at: new Date().toISOString(),
+    };
+
+    await createNewSpending(newSpending).then((created) => {
+      setSpending((prevState) => [...prevState, created]);
+      setIsSubmitting(false);
+    });
   };
 
   return (
@@ -45,14 +32,33 @@ const Home = ({ data }) => {
       </Head>
 
       <main className={styles.contentWrapper}>
-        <h1>hello world</h1>
-        <form id="form1" onSubmit={addNewSpending}>
-          <button
-            type="submit"
-            form="form1"
-            value="Submit"
-            disabled={isSubmitting}
-          >
+        <h1>Spending Tracker</h1>
+        <form id="spendingInput" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            id="description"
+            placeholder="description"
+            maxLength={200}
+          />
+          <input type="number" id="amount" placeholder="0" />
+          <br />
+          <input
+            type="radio"
+            id="hufCurrency"
+            name="currency"
+            value="HUF"
+            defaultChecked
+          ></input>
+          <label htmlFor="hufCurrency">HUF</label>
+          <input
+            type="radio"
+            id="usdCurrency"
+            name="currency"
+            value="USD"
+          ></input>
+          <label htmlFor="usdCurrency">USD</label>
+          <br />
+          <button type="submit" form="spendingInput" disabled={isSubmitting}>
             Submit
           </button>
         </form>
@@ -67,9 +73,8 @@ const Home = ({ data }) => {
 };
 
 export const getServerSideProps = async () => {
-  const res = await fetch(`${process.env.BASE_URL}/spendings`);
-  const data = await res.json();
-  return { props: { data } };
+  const fetchedSpendings = await getSpendings();
+  return { props: { fetchedSpendings } };
 };
 
 export default Home;
