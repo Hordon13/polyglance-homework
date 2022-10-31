@@ -11,9 +11,7 @@
     margin-bottom: 20px;
     color: #333;
     letter-spacing: 3px;
-    text-shadow:
-      0 0 1px #333,
-      0 0 2px #333,
+    user-select: none;
   }
 
   form {
@@ -115,6 +113,7 @@
         margin-right: 20px;
         cursor: pointer;
         text-transform: uppercase;
+        user-select: none;
       }
     }
 
@@ -163,4 +162,33 @@
       }
     }
   }
+}
+
+@media only screen and (min-width: 720px) {
+
+  .container {
+    margin: 20px;
+    padding: 60px 40px;
+
+    .contentWrapper {
+      width: 100%;
+      max-width: 720px;
+    }
+
+    h1 {
+      font-size: 96px;
+      margin-bottom: 40px;
+      letter-spacing: 6px;
+    }
+
+    .filterBlock {
+      margin-top: 60px;
+    }
+
+    ul {
+      margin-top: 80px;
+    }
+  }
+
+
 }
