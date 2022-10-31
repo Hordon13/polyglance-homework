@@ -9,11 +9,22 @@ import {
   direction,
   sortBy,
 } from "../utils/filter";
+import { initaialStatus, statusMessages, validate } from "../utils/validation";
 
 const Home = ({ fetchedSpendings }) => {
   const [spendings, setSpending] = useState([...fetchedSpendings]);
   const [filterSettings, setFilterSettings] = useState(defaultFilterSettings);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(initaialStatus);
+
+  const updateStatus = (message, isError = false) => {
+    setStatusMessage({
+      message,
+      isError,
+    });
+
+    setTimeout(() => setStatusMessage(initaialStatus), 2500);
+  };
 
   const onDirectionChange = () => {
     setFilterSettings((prevState) => ({
@@ -48,9 +59,17 @@ const Home = ({ fetchedSpendings }) => {
       spent_at: new Date().toISOString(),
     };
 
+    const validationResult = validate(newSpending);
+    if (validationResult !== statusMessages.VALID) {
+      setIsSubmitting(false);
+      updateStatus(validationResult, true);
+      return;
+    }
+
     await createNewSpending(newSpending).then((created) => {
       setSpending((prevState) => [...prevState, created]);
       setIsSubmitting(false);
+      updateStatus(statusMessages.SUCCESS);
       e.target.description.value = "";
       e.target.amount.value = null;
     });
@@ -65,14 +84,12 @@ const Home = ({ fetchedSpendings }) => {
 
       <main className={styles.contentWrapper}>
         <h1>CASHFLOW</h1>
-        <form id="spendingInput" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            id="description"
-            placeholder="description"
-            maxLength={200}
-          />
-          <input type="number" id="amount" placeholder="amount" />
+        <form id="spendingInput" onSubmit={handleSubmit} noValidate>
+          <input type="text" id="description" placeholder="description" />
+          <input type="text" id="amount" placeholder="amount" />
+          <span className={statusMessage.isError ? styles.error : ""}>
+            {statusMessage.message}
+          </span>
           <div className={styles.bottomRow}>
             <div>
               <input
