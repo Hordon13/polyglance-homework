@@ -64,58 +64,7 @@ const Home = ({ fetchedSpendings }) => {
       </Head>
 
       <main className={styles.contentWrapper}>
-        <h1>Spending Tracker</h1>
-        <section className={styles.filterBlock}>
-          <input
-            type="radio"
-            id="sortByDate"
-            name="sortBy"
-            value={sortBy.DATE}
-            defaultChecked
-            onChange={(e) => onSortByChange(e)}
-          ></input>
-          <label htmlFor="sortByDate">{sortBy.DATE}</label>
-          <input
-            type="radio"
-            id="sortByAmount"
-            name="sortBy"
-            value={sortBy.AMOUNT}
-            onChange={(e) => onSortByChange(e)}
-          ></input>
-          <label htmlFor="sortByAmount">{sortBy.AMOUNT}</label>
-          <input
-            type="checkbox"
-            id="sortDirection"
-            name="direction"
-            onChange={() => onDirectionChange()}
-          />
-          <label htmlFor="sortDirection">{direction.ASC}</label>
-          <input
-            type="radio"
-            id="allFilter"
-            name="currencyFilter"
-            value={currencies.ALL}
-            defaultChecked
-            onChange={(e) => onCurrencyFilterChange(e)}
-          ></input>
-          <label htmlFor="allFilter">{currencies.ALL}</label>
-          <input
-            type="radio"
-            id="hufFilter"
-            name="currencyFilter"
-            value={currencies.HUF}
-            onChange={(e) => onCurrencyFilterChange(e)}
-          ></input>
-          <label htmlFor="hufFilter">{currencies.HUF}</label>
-          <input
-            type="radio"
-            id="usdFilter"
-            name="currencyFilter"
-            value={currencies.USD}
-            onChange={(e) => onCurrencyFilterChange(e)}
-          ></input>
-          <label htmlFor="usdFilter">{currencies.USD}</label>
-        </section>
+        <h1>CASHFLOW</h1>
         <form id="spendingInput" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -123,34 +72,120 @@ const Home = ({ fetchedSpendings }) => {
             placeholder="description"
             maxLength={200}
           />
-          <input type="number" id="amount" placeholder="0" />
-          <br />
-          <input
-            type="radio"
-            id="hufCurrency"
-            name="currency"
-            value={currencies.HUF}
-            defaultChecked
-          ></input>
-          <label htmlFor="hufCurrency">{currencies.HUF}</label>
-          <input
-            type="radio"
-            id="usdCurrency"
-            name="currency"
-            value={currencies.USD}
-          ></input>
-          <label htmlFor="usdCurrency">{currencies.USD}</label>
-          <br />
-          <button type="submit" form="spendingInput" disabled={isSubmitting}>
-            Submit
-          </button>
+          <input type="number" id="amount" placeholder="amount" />
+          <div className={styles.bottomRow}>
+            <div>
+              <input
+                type="radio"
+                id="hufCurrency"
+                name="currency"
+                value={currencies.HUF}
+                defaultChecked
+              ></input>
+              <label htmlFor="hufCurrency">{currencies.HUF}</label>
+              <input
+                type="radio"
+                id="usdCurrency"
+                name="currency"
+                value={currencies.USD}
+              ></input>
+              <label htmlFor="usdCurrency">{currencies.USD}</label>
+            </div>
+            <button type="submit" form="spendingInput" disabled={isSubmitting}>
+              save
+            </button>
+          </div>
         </form>
+        <section className={styles.filterBlock}>
+          <div className={styles.filterLine}>
+            <p>sort by:</p>
+            <div>
+              <input
+                type="radio"
+                id="sortByDate"
+                name="sortBy"
+                value={sortBy.DATE}
+                defaultChecked
+                onChange={(e) => onSortByChange(e)}
+              ></input>
+              <label htmlFor="sortByDate">{sortBy.DATE}</label>
+              <input
+                type="radio"
+                id="sortByAmount"
+                name="sortBy"
+                value={sortBy.AMOUNT}
+                onChange={(e) => onSortByChange(e)}
+              ></input>
+              <label htmlFor="sortByAmount">{sortBy.AMOUNT}</label>
+            </div>
+          </div>
 
+          <div className={styles.filterLine}>
+            <p>direction: </p>
+            <div>
+              <input
+                type="checkbox"
+                id="sortDirection"
+                name="direction"
+                onChange={() => onDirectionChange()}
+              />
+              <label htmlFor="sortDirection">
+                {filterSettings.direction === direction.ASC
+                  ? direction.ASC
+                  : direction.DSC}
+              </label>
+            </div>
+          </div>
+
+          <div className={styles.filterLine}>
+            <p>currency: </p>
+            <div>
+              <input
+                type="radio"
+                id="allFilter"
+                name="currencyFilter"
+                value={currencies.ALL}
+                defaultChecked
+                onChange={(e) => onCurrencyFilterChange(e)}
+              ></input>
+              <label htmlFor="allFilter">{currencies.ALL}</label>
+              <input
+                type="radio"
+                id="hufFilter"
+                name="currencyFilter"
+                value={currencies.HUF}
+                onChange={(e) => onCurrencyFilterChange(e)}
+              ></input>
+              <label htmlFor="hufFilter">{currencies.HUF}</label>
+              <input
+                type="radio"
+                id="usdFilter"
+                name="currencyFilter"
+                value={currencies.USD}
+                onChange={(e) => onCurrencyFilterChange(e)}
+              ></input>
+              <label htmlFor="usdFilter">{currencies.USD}</label>
+            </div>
+          </div>
+        </section>
         <ul>
           {filterSpendings(spendings, filterSettings).map((el) => (
             <li key={el.id}>
-              <b>{el.id}</b> {el.description} {el.amount} {el.currency}{" "}
-              {new Date(el.spent_at).toLocaleDateString("hu-HU")}
+              <div className={styles.topLine}>
+                <p>{el.description}</p>
+                <p>
+                  <b>{el.amount}</b> {el.currency}
+                </p>
+              </div>
+              <div className={styles.bottomLine}>
+                <p>{new Date(el.spent_at).toLocaleDateString("hu-HU")}</p>
+                <p>
+                  {new Date(el.spent_at).toLocaleTimeString("hu-HU", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
