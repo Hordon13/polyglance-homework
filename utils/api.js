@@ -1,5 +1,7 @@
 const getSpendings = async () => {
-  const res = await fetch(`${process.env.BASE_URL}/spendings`);
+  const res = await fetch(
+    `https://polygence-spendtracker.herokuapp.com/spendings`
+  );
   const data = await res.json();
   return data;
 };
